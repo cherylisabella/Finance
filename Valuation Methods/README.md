@@ -164,11 +164,11 @@ FCF_forecast <- mutate(forecast_dcf, CAPEX = PPE_fc - lag(PPE_fc),
          FCF = EBIT_fc * (1- ratios$avg_tax_rate) + depreciation_fc - CAPEX - NWC_change)
 FCF_forecast[-1,c(1,10)]
 ```
-| **Free Cash Flow Forecast** |  |  |  |
-|-----------------------------|--|--|--|
+| **Free Cash Flow Forecast** |  |
+|-----------------------------|--|
 | **Year**                    | **FCF (in $)** |
 |-----------------------------|----------------|
-| 1                          | 73202533838    |
+| 1                           | 73202533838    |
 | 2                           | 85610363324    |
 | 3                           | 100121319907   |
 | 4                           | 117091883632   |
