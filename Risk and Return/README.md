@@ -61,25 +61,11 @@ Comparison of the Sharpe ratios of the portfolios vs. the Sharpe ratios of the i
 - The average Sharpe ratio of cryptocurrencies is significantly higher than that of stocks and indices. As previously noted, investments in cryptocurrencies are riskier. However, investors are compensated for taking on this additional risk. The Sharpe ratio for cryptocurrencies suggests that the risk premium per unit of volatility is higher than that for stocks and indices.
 
 ### d) Investment Decision
-| Type   | Name               | Sharpe Ratio |
-|--------|--------------------| -------------|
-| crypto | etherium           | 0.95556946   |
-| crypto | bitcoin            | 0.91567163   |
-| stock  | Apple              | 0.38756912   |
-| crypto | ripple             | 0.38548622   |
-| stock  | Mc_Donalds         | 0.30750932   |
-| index  | Dow                | 0.28125290   |
-| index  | nasdaq             | 0.27375701   |
-| index  | SP_500             | 0.24449104   |
-| stock  | Walmart            | 0.23476097   |
-| stock  | Caterpillar        | 0.22079363   |
-| index  | Russel_2000        | 0.21909422   |
-| stock  | Intel              | 0.20933348   |
-| stock  | Coke               | 0.17688346   |
-| stock  | ProcterGamble      | 0.17358498   |
-| stock  | Bank_of_America    | 0.06120883   |
-| stock  | American_Airlines  | 0.02748151   |
-| stock  | General_electric   | -0.03943999  |
+
+| Type               | crypto_etherium | crypto_bitcoin | crypto_ripple | stock_Apple | stock_Mc_Donalds | index_Dow | index_nasdaq | index_SP_500 | stock_Walmart | stock_Caterpillar | index_Russel_2000 | stock_Intel | stock_Coke | stock_ProcterGamble | stock_Bank_of_America | stock_American_Airlines | stock_General_electric |
+|--------------------|-----------------|-----------------|----------------|-------------|------------------|-----------|--------------|--------------|---------------|-------------------|--------------------|-------------|------------|---------------------|-----------------------|------------------------|------------------------|
+| Sharpe Ratio       | 0.95556946       | 0.91567163       | 0.38548622      | 0.38756912  | 0.30750932       | 0.28125290| 0.27375701   | 0.24449104   | 0.23476097    | 0.22079363        | 0.21909422         | 0.20933348  | 0.17688346 | 0.17358498          | 0.06120883           | 0.02748151             | -0.03943999            |
+
 
 I would invest in the cryptocurrency Ethereum since it has the highest Sharpe ratio - this investment would give the highest return per unit of volatility.
 
