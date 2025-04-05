@@ -143,7 +143,10 @@ The correlations also highlight the significant relationships between firm size,
 
 This analysis demonstrates the intricate relationship between a firm's size, sales performance, financial liquidity, and other important financial metrics. By understanding these correlations, firms can make more informed decisions to optimize their advertising budgets, sales strategies, and overall business operations.
 
-### Cross-Sectional Data
+--- 
+
+### Aggregate Data Models
+#### Cross-Sectional Data
 - Data Aggregation: The dataset was aggregated to create a cross-sectional representation, with one observation per firm, by calculating the mean of the numerical variables across each firm.
 - Categorical Data Handling: Since categorical variables (e.g., industry dummies, mobile app availability) cannot be averaged, these were extracted and merged with the aggregated dataset.
 - Dataset Structure: The code snippet below demonstrates the aggregation and merging process, followed by handling of missing categorical values.
@@ -158,30 +161,83 @@ This analysis demonstrates the intricate relationship between a firm's size, sal
  - Normalization:
    - Procedure: All independent numerical variables were normalized, with the exception of the dependent variables (market share and Tobin's Q), which do not require normalization.
 
-#### Regression Models
-
-Market Share Regression:
+### Models Built On Aggregate Data
+#### Linear Regression:
 - Model Details:
   - The dependent variable is market share, while Tobin’s Q was excluded from the model.
   - A regression model was fit using normalized data, showing that firm size and industry type are significant predictors of market share.
+  - The variable family_clothes was excluded because we used it as our reference level
 
-    - Interpretation:
-      - Larger firms tend to have higher market shares.
-      - Retailers in the shoe industry tend to have higher market shares compared to family clothing retailers.
-      - Industry dummies and firm size were the only statistically significant variables.
+- Quality of the model:
+  - The adjusted R-squared shows that the model explains 75.64% of the variance in the dependent variable. This is a relatively good fit.
+  - The p-value associated with the F-statistic is lower than the 5% significance level, meaning that at least one independent variable is significantly related to the market share.
+  - While this model does not explain the relationships between all of the predictors and market share, it can be used to indicate which managerial investment decisions and firm characteristics are related to the market share and in what way.
+
+- Interpretation of the results:
+  - Since the variables are normalized, we cannot say by how much the market share would change with a change in any of the independent variables. However, we can compare the influence of different predictors and whether they are positively or negatively related to the market share.
+  - Based on the t-statistic and corresponding p-values, we can conclude that the coefficients of only 3 out of 9 predictors are significantly different from zero: firm size and industry dummy variables. There is not enough evidence to conclude a linear relationship between the other predictors and the response variable.
+  - The coefficient of the `firm_size` is positive, meaning the larger the firm, the higher the market shares.
+  - The coefficients of the industry dummy variables indicate that, out of the three industries analyzed in this report, retailers selling shoes have, on average, the highest market share and retailers selling family clothes (reference level) have on average the lowest market shares.
+  - Even though the rest of the variables are not significant in predicting the market share, we may analyze them as if they were statistically significant:
+    - Firms with higher advertising intensity (ratio of advertising expenditures and total revenues) are expected to have larger market shares than otherwise identical companies with low advertising intensity.
+    - Firms whose marketing investments (ratio of marketing expenditures and total assets) are higher, holding all else equal, are expected to have a lower market share.
+    - The model indicates that younger firms, on average, have a larger market share.
+    - Firms with high financial liquidity (more working capita) have a lower market share on average.
+    - Retailers with high firm leverage (firms relying more heavily on debt as a source of financing) are expected to have a lower market share (holding all else equal).
+    - Introducing a mobile app is associated with a higher market share, assuming that we compare otherwise identical companies.
+
+ - Firm’s with the objective to increase their market share should satisfy the following characteristics:
+   - High advertising intensity
+   - Low marketing investment ratio
+   - Be young and large
+   - Low financial liquidity
+   - Low firm leverage
+   - Have a mobile app
+ - However, the only statistically significant firm characteristic is the firm size (apart from the industry). Hence, a retailer should try to grow in size.
+
+Overall:
+- Larger firms tend to have higher market shares.
+- Retailers in the shoe industry tend to have higher market shares compared to family clothing retailers.
+- Industry dummies and firm size were the only statistically significant variables.
         
-Tobin’s Q Regression:
+#### Tobin’s Q Regression:
 - Model Details:
   - The dependent variable is Tobin’s Q, and similar to the market share regression, industry and firm-specific variables were included.
   - Only advertising intensity was found to have a significant impact, with a negative relationship to Tobin’s Q.
+- The variable family_clothes was excluded because we used it as our reference level
 
-- Interpretation:
-  - High advertising intensity is negatively correlated with Tobin’s Q, indicating that excessive advertising investment may reduce long-term value.
+- Quality of the model:
+  - The adjusted R-squared shows that the model explains 25.25% of the variance in the dependent variable. Since this value is much lower than for the market share model, it is a relatively poor fit.
+  - The p-value associated with the F-statistic is also lower than the 5% significance level, which means that at least one independent variable is significantly related to Tobin's Q. 
+
+- Interpretation of the results:
+  - Similar to the market share regression model, the variables are also normalised. This means we cannot precisely determine how much Tobin's Q would change due to a change in the independent variables. However, it is possible to compare the significance of the different predictors and whether these predictors are positively or negatively related to Tobin's Q. 
+  - Based on the t-score and corresponding p-values, we can conclude that only one predictor has coefficients significantly different from zero, which is advertising intensity (adv_int) .
+  - Advertising intensity: The coefficient of `adv_int` is negative. This inverse relationship implies that firms that invest more intensely in advertising are expected to have a lower Tobin's Q ratio.
+
+- Despite the other variables are not significant in predicting the market share, we may analyse them as if they were statistically significant:
+  - `marketing_inv`: Firm that invests more in marketing, ceteris paribus, are expected to have a lower Q ratio.
+  - `firm_age`: younger firms are expected to have a lower Q ratio. 
+  - `firm_size`: firms that are larger are expected to have a higher Q ratio.
+  - `liquidity`: firms with higher financial liquidity are expected to have a lower Q ratio.
+  - `leverage`: firms with higher firm leverage are expected to have a lower Q ratio.
+  - `Mobile_app`: firms with a mobile app are expected to have a higher Q ratio
+  - `women_clothes` and `shoes`: the coefficients indicate that firms that sell women's clothes have, on average, the highest Q ratio.
+
+- All in all, it can be concluded that for a firm to have a high Q ratio, it should have the following characteristics:
+  - Low advertising intensity
+  - Low marketing investments
+  - A young and large firm
+  - Low financial liquidity
+  - Low firm leverage
+  - Have a mobile app
+- Since the only statistically significant firm characteristic was advertising intensity, a retailer wishing to increase their Tobin's Qshould lower their advertising intensity.
+  
         
-Model Differences:
+#### Model Differences:
 - The key differences between the market share and Tobin's Q models were noted, with the market share model performing better due to a higher adjusted R-squared value. Tobin's Q, being more focused on long-term value, reflects less immediate impact from current strategies.
 
-Expected Performance of an Average Firm:
+#### Expected Performance of an Average Firm:
 - Predictions were made for an "average" firm, using the means of numerical variables and categorical combinations for different industries.
 - Results:
   - The shoe industry is predicted to have the highest market share (14.4%), with a slight increase when a mobile app is introduced
@@ -189,9 +245,11 @@ Expected Performance of an Average Firm:
   - Family clothing retailers show the lowest market share but have the highest average Tobin’s Q ratio.
 This analysis provides insight into how various factors such as advertising intensity, firm size, and industry type impact key performance indicators like market share and Tobin’s Q, with recommendations for firms based on regression results.
 
-### Regression Models
-We first need to ensure that there are no missing values after creating the lead and lag variables. Any missing values in the lead or lag variables might affect the analysis, so we should handle them before proceeding with the modeling.
-- If there are missing values, we can either drop them or impute them depending on the nature of the analysis.
+---
+
+### Disaggregate Data Models
+- All numerical variables in the dataset are first normalised to standardize the range of values. 
+- Lead and lag variables for certain predictors (e.g. market share and Tobin’s Q) are then created, to capture time-based effects.
 
 #### Panel Data Model
 - Now that we have the disaggregated data and lead/lag variables, we can proceed with building a panel data model. Panel data allows us to control for both time-variant and time-invariant effects.
