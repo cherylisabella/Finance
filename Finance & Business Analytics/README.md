@@ -163,6 +163,12 @@ This analysis demonstrates the intricate relationship between a firm's size, sal
 
 ### Models Built On Aggregate Data
 #### Linear Regression:
+<p align="center">
+  <span style="font-family: 'Arial', sans-serif; font-size: 16px;">
+    $\widehat{\text{market\_share}} = -0.04762 + 0.01211(\text{Mobile\_app}_{1}) + 0.0662(\text{women\_clothes}_{1}) + 0.11953(\text{shoes}_{1}) + 0.01703(\text{adv\_int}) - 0.03087(\text{marketing\_inv}) - 0.04767(\text{firm\_age}) + 0.31413(\text{firm\_size}) - 0.05046(\text{liquidity}) - 0.02931(\text{leverage})$
+  </span>
+</p>
+
 - Model Details:
   - The dependent variable is market share, while Tobin’s Q was excluded from the model.
   - A regression model was fit using normalized data, showing that firm size and industry type are significant predictors of market share.
@@ -201,6 +207,12 @@ Overall:
 - Industry dummies and firm size were the only statistically significant variables.
         
 #### Tobin’s Q Regression:
+<p align="center">
+  $$\widehat{\text{tobin\_q}} = 2.75514 + 0.20194(\text{Mobile\_app}_{1}) - 0.11558(\text{women\_clothes}_{1}) - 0.26118(\text{shoes}_{1}) - \\
+  0.99538(\text{adv\_int}) - 0.83539(\text{marketing\_inv}) - 0.69895(\text{firm\_age}) + 0.84023(\text{firm\_size}) - \\
+  0.80121(\text{liquidity}) - 0.78311(\text{leverage})$$
+</p>
+
 - Model Details:
   - The dependent variable is Tobin’s Q, and similar to the market share regression, industry and firm-specific variables were included.
   - Only advertising intensity was found to have a significant impact, with a negative relationship to Tobin’s Q.
@@ -235,7 +247,20 @@ Overall:
   
         
 #### Model Differences:
-- The key differences between the market share and Tobin's Q models were noted, with the market share model performing better due to a higher adjusted R-squared value. Tobin's Q, being more focused on long-term value, reflects less immediate impact from current strategies.
+
+- The key differences between the market share and Tobin's Q models were notable, with the market share regression model performing better due to a higher adjusted R-squared value. Tobin's Q, being more focused on long-term value, reflects less immediate impact from current strategies.
+- As previously discussed, both models predominantly indicate the insignificance of certain variables. However, we chose to include all variables in our analysis, as even those that are statistically insignificant can offer valuable insights.
+- Advertising Intensity:
+  - An increase in advertising intensity is associated with a rise in market share, but conversely, it leads to a decrease in Tobin's Q. This suggests that while advertising efforts may drive immediate sales growth, they may not necessarily enhance the firm's long-term market value relative to its book value.
+- Industry Comparison:
+  - Retailers in the shoe and women's clothing industries tend to have a higher market share compared to those in the family clothing sector. However, these retailers in shoes and women’s clothing typically exhibit a lower Tobin’s Q, indicating that while they capture a larger share of the market, their long-term market value is relatively lower.
+
+Tobin's Q:
+- Tobin’s Q represents the ratio of a firm's market value to the replacement cost of its assets. This metric focuses on the long-term performance and reflects the relationship between market value and asset worth. However, it's important to note that current actions may not be immediately reflected in Tobin’s Q.
+
+Market Share:
+- In contrast, market share is more directly linked to a company's day-to-day activities and decisions. Consequently, the impact of business actions on market share is often visible in the short term.
+- As a result, the model predicting market share appears to provide a better fit compared to the model for Tobin’s Q, as evidenced by the higher adjusted R-squared value.
 
 #### Expected Performance of an Average Firm:
 - Predictions were made for an "average" firm, using the means of numerical variables and categorical combinations for different industries.
@@ -249,7 +274,9 @@ This analysis provides insight into how various factors such as advertising inte
 
 ### Disaggregate Data Models
 - All numerical variables in the dataset are first normalised to standardize the range of values. 
-- Lead and lag variables for certain predictors (e.g. market share and Tobin’s Q) are then created, to capture time-based effects.
+- Lead and lag variables for certain predictors (e.g. market share and Tobin’s Q) were then created to capture time-based effects.
+  - Lead variables for the market share and Tobin's Q.
+  - Lag variables for the advertising intensity and marketing investments.
 
 #### Panel Data Model
 - Now that we have the disaggregated data and lead/lag variables, we can proceed with building a panel data model. Panel data allows us to control for both time-variant and time-invariant effects.
