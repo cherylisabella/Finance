@@ -90,6 +90,9 @@ The following variables were excluded:
 - `bkvlps`, `ni`, `oibdp`, `gsubind` (no descriptions available)
 - `busdec` (not required for analysis)
 
+#### Missing Values
+<img src="missingvalues.png" width="500" style="display:block; margin: 0 auto;"/>
+
 There are 104 missing values in total, distributed across various variables. The most missing values occur in:
 - `xad` (Advertising expenditures) with 36 missing values
   - Missing values in `xad` were replaced with 0, assuming that the firm did not allocate advertising expenditures during that period.
@@ -107,41 +110,222 @@ The firm’s foundation year was merged with the dataset to calculate the age of
 
 Several variables, including investment status and SIC codes, were initially stored as numeric values. These were corrected to categorical data types.
 
-Several outliers were identified, primarily due to large retailers like TJX Companies, Gap, and Nordstrom. These outliers did not necessitate the removal of data points but were acknowledged for further analysis.
-- Outliers, especially in the variable "market share," were addressed by removing a specific observation for the year 2020. Further, a Z-score approach was applied to detect and remove extreme outliers.
+#### Outliers:
+- Outliers, especially in the variable `market share`, were addressed by removing a specific observation for the year 2020.
+- The outliers are due to the size/scale of the retailers (primarily TJX Companies, Gap and Nordstrom). This is the case for all variables which describe the firm (e.g. total assets, current assets, long term debt,…).
+- The variable book value (`ceq`) also had some negative values which come from firms with more liabilities than assets
+- The variable market share has an outlier with the value “1”: This is because there is only one observation for the financial year 2020 (company Ascena Retail Group Inc.). It was not deleted since it is still correct within the available data.
+- The original variables have, in general, more outliers than the created variables.
 
-For further analysis, the data will be normalized using Min-Max normalization to ensure all variables are on the same scale.
+<img src="outliers.png" width="500" style="display:block; margin: 0 auto;"/>
+
+In the boxplot for the market share, we identified an outlier:
+- Further investigation showed that there is only one observation for the financial year 2020
+- Since this can be misleading our analysis, we decided to delete this observation
+- The boxplots revealed many further outliers:
+  - These outliers would influence our further analysis and possibly mislead it
+  - Hence, observations that contain outliers were deleted, leaving us with 84.3% of the original data data (15.7% were outliers).
+
+#### Min-Max normalization
+For further analysis, the data will be normalised using Min-Max normalization to ensure that all variables are on the same scale. 
+
+In the following parts of the report, a multivariate linear regression model will be developed. 
+- This algorithm does not require the data to be normally distributed, so achieving normality will not be pursued.
+- However, when working with numeric variables, it is crucial to consider that they have varying ranges. To compare the impact of multiple numeric variables on the response variable, the predictors must be normalised.
+
+Min-Max normalisation was used to ensure that values fall between 0 and 1, which facilitates convenient comparison of the impact of each predictor on the response variable. 
+- This normalisation guarantees that all variables are on the same scale and are considered equally.
+- The normalised data cannot be used for exploratory data analysis, as it makes interpretation more difficult.
 
 #### Summary Statistics for Numerical Variables
 
 A table of summary statistics for numerical variables was generated, including measures of center, spread, and range. Most variables exhibited right-skewness, with the exception of advertising intensity.
 
-The following bar plot shows the number of retailers per industry.
+- Measures of centre: mean, median
+- Measures of spread: standard deviation (sd), interquartile range (iqr)
+- Measures of range: min, max
 
-The market share analysis provides insight into how the key players within each industry have evolved over the years, with particular attention paid to the major shifts from 2010 to 2019. This allows us to observe the competition dynamics and dominance of major players.
+- Indication of skewed data:
+  - Right-skewed: median < mean
+  - Left-skewed: median > mean
+  - As the values show, all of our variables are right-skewed (except `adv_int`)
+  - Especially the variables that were originally in the dataset (e.g., sales, total and current assets) are right-skewed
+- All variables except the book value contain only positive value
+
+| Variable               | Mean  | Median | SD    | IQR   | Min   | Max   |
+|------------------------|-------|--------|-------|-------|-------|-------|
+| act                    | 1036  | 444    | 1574  | 740   | 27    | 8891  |
+| at                     | 2026  | 741    | 3036  | 2040  | 42    | 24145 |
+| ceq                    | 800   | 367    | 1081  | 942   | -1272 | 5948  |
+| csho                   | 103   | 48     | 156   | 88    | 0     | 1217  |
+| dltt                   | 410   | 22     | 995   | 201   | 0     | 10053 |
+| emp                    | 30    | 12     | 46    | 24    | 2     | 286   |
+| lct                    | 584   | 197    | 1011  | 379   | 18    | 7150  |
+| sale                   | 3940  | 1507   | 6467  | 2714  | 135   | 41717 |
+| xad                    | 85    | 40     | 129   | 88    | 0     | 687   |
+| xsga                   | 1028  | 376    | 1357  | 992   | 41    | 7455  |
+| prcc_f                 | 24    | 19     | 21    | 29    | 0     | 112   |
+| total_industry_sales   | 46079 | 18656  | 35119 | 68248 | 3718  | 101697|
+| market_share           | 0     | 0      | 0     | 0     | 0     | 1     |
+| tobin_q                | 2     | 1      | 2     | 1     | 1     | 21    |
+| adv_int                | 0     | 0      | 0     | 0     | 0     | 0     |
+| marketing_inv          | 1     | 1      | 0     | 0     | 0     | 2     |
+| firm_size              | 3     | 2      | 1     | 2     | 0     | 6     |
+| liquidity              | 2     | 2      | 1     | 1     | 1     | 6     |
+| leverage               | 0     | 0      | 0     | 0     | 0     | 1     |
+| firm_age               | 54    | 47     | 27    | 29    | 11    | 127   |
+
+**Number of retailers per industry**
+
+<img src="bar1.png" width="500" style="display:block; margin: 0 auto;"/>
+
+In total, there are 43 different retailers, of which:
+- 19 are women´s clothing stores
+- 14 are family clothing stores
+- 10 are shoe stores
+
+
+**Number of retailers with an app per industry**
+
+<img src="bar2.png" width="500" style="display:block; margin: 0 auto;"/>
+
+- In the dataset, 12 companies have introduced an app at some point between 2010 and 2020:
+  - 1 is a women’s clothing store
+  - 9 are Family clothing stores
+  - 2 are Shoe stores
+- The normalized barplot shows the proportion of firms in each industry that have introduced an app
+- The most significant proportion of retailers to launch an app is selling family clothing, and the minor proportion is selling women’s clothing
+
+<img src="timeseries.png" width="500" style="display:block; margin: 0 auto;"/>
+
+The time series plot provides insight into how the key players within each industry have evolved over the years, with particular attention paid to the major shifts from 2010 to 2019. This allows us to observe the competition dynamics and dominance of major players.
+
+- There is only one firm whose data is available for the financial year 2020, and that firm (Ascena Retail Group Inc.) has not introduced an app. For this reason, the time series plot shows information about financial years 2010-2019.
+
+- Women’s clothing stores:
+  - The only app was launched in 2014
+- Family clothing stores:
+  - The first app was introduced in 2012
+  - The next launches occurred in 2016, with three other retailers introducing their apps to the market
+  - The latest app launch was in 2019 when another three apps were released
+- Shoe stores:
+  - Both apps introduced by the retailers in the dataset were launched in 2016
+
+**Average sales by industry**
+
+<img src="bar3.png" width="500" style="display:block; margin: 0 auto;"/>
+
+- Family clothing industry:
+  - In general, the average sales are significantly higher than in the women’s clothing or shoe industry
+  - Average sales were equal to 5 billion dollars in 2010
+  - Sales increased significantly in the next nine years to nearly 8.5 billion in the year 2019
+- Shoe industry:
+  - At the beginning of the given period, average sales in the shoe industry were equal to about 2 billion dollars
+  - Throughout next years, this amount steadily increased to 3.1 billion in 2019
+- Women’s clothing industry:
+  - In general, this industry makes the least gross sales
+  - In the year 2010, retailers earned 1.25 billion in gross sales on average
+  - From 2010 to 2019, sales in this industry did not rise significantly. Hence, there was only a small increase in sales in comparison to the other two industries
+
+<img src="timeseries1.png" width="500" style="display:block; margin: 0 auto;"/>
+
+**Average advertising expenditures per industry**
+
+<img src="timeseries2.png" width="500" style="display:block; margin: 0 auto;"/>
+
+- Women’s clothing industry:
+  - In 2010, the average spending of retailers was approximately 40-45 million dollars
+  - The expenditures steadily increased with fluctuation in the years from 2013 to 2015 years and continued to grow to average spending of 70-75 million in the year 2019
+  - The sudden peak of advertising expenditures to 180 million dollars in 2020 comes from the fact that there is only one observation for 2020; hence it might be misleading
 - Shoe Industry:
-  - In 2010, the shoe industry was primarily dominated by Foot Locker and Collective Brands. This reflects a competitive landscape with a few key players controlling the market share.
-  - By 2019, Foot Locker strengthened its position, increasing its market share by 20%, claiming over 50% of the market. This shift highlights Foot Locker's dominance and its ability to outpace competitors during this period.
+  - In 2010, retailers spent on average nearly 50 million dollars on advertising per year
+  - The growth was steady throughout the years with small fluctuations and grew to almost 90 million in 2018 before reverting into a decline in average spending to 80 million in 2019
+- Family clothing:
+  - In this industry, retailers spent on average significantly higher amounts than companies in the shoe and women’s clothing industries
+  - Their spending was on average 90 million dollars on advertising
+  - The advertising expenditures increased drastically throughout the following years to almost 175 million dollars in 2019
+- It is interesting to see the correlation between the average advertising expenditures and the average sales per industry.
+- This might be a two-way correlation:
+  - As sales rise, the firm has more money to spend on advertising
+  - As the firm’s advertising expenditures rise, they attract more customers and convince them makes purchases; hence sales rise
 
-- Women's Clothing Industry:
-  - The 2010 market share for women's clothing was more fragmented, with no single player holding a dominant position.
-  - By 2019, there was a marked shift in the market landscape. The Ascena Retail Group emerged as the market leader, controlling 42% of the market share. This indicates consolidation in the market, where larger firms are increasingly controlling a more significant portion of sales.
+**Financial Liquidity**
+- Financial Liquidity is the ratio of the current assets to current liabilities
+  - This measure assesses whether a firm has sufficient working capital to meet its short-term needs
+  - The higher this ratio, the more working capital the firm has available
 
-- Family Clothing Industry:
-  - The 2010 market was highly competitive, with TJX Companies holding a significant portion of the market share, followed by other key players such as Gap, Nordstrom, and Ross Stores.
-  - By 2019, TJX Companies' dominance increased by 10%, further consolidating its position as the leader in the market. Despite this, the market remained relatively fragmented with many smaller players, indicating more competition than in other industries.
+The following bar chart shows the average financial liquidity of the retailers per industry:
 
+<img src="bar4.png" width="500" style="display:block; margin: 0 auto;"/>
 
-  The correlation analysis provides valuable insight into the relationships between different numerical variables. By looking at the correlation matrix and corresponding p-values, we can observe the degree of linear relationships between key firm characteristics.
+Comparison among the three industries:
 
-- Key Observations:
-  - Sales, Assets, Advertising Expenditures: A strong positive correlation exists between sales and assets, as firms with higher sales tend to accumulate more assets. Similarly, firms with larger sales volumes also tend to spend more on advertising, which in turn can influence their sales and market share.
-  - Firm Size and Characteristics: The number of employees and firm size correlate strongly with other financial metrics. Larger firms, in general, have higher sales, assets, and expenditures
-  - Financial Liquidity: The correlation between financial liquidity and firm performance measures (such as sales and assets) indicates that firms with more available short-term capital tend to have more stable financial conditions, which can positively influence performance.
+- The financial liquidity is the lowest for the women’s clothing industry, followed by the family clothing industry and the shoe industry, with the highest liquidity ratio
+- This means, on average, the shoe industry has more available short-term/working capital available than the other two industries
+- Comparison to other industries
+  - For large U.S. firms in 2018, the quartile values [25%, median, 75%] are: [1.2, 1.8, 2.9]
+  - With values of 1.8, 2.1 and 2.75, the shoe, women’s clothing and family clothing industries are all doing well
+  - Their financial liquidity ratios lie within the third quartile
 
-The correlations also highlight the significant relationships between firm size, asset base, and overall financial health. Larger companies tend to have greater financial resources, which can fuel further expansion, innovation, and advertising spend
+**Tobin’s Q over Time**
+- Tobin’s q is the market value of a company divided by its assets’ replacement cost
+  - It is an important measure to evaluate if a business is overvalued or undervalued
+  - The average Tobin’s q value is about 0.8
 
-This analysis demonstrates the intricate relationship between a firm's size, sales performance, financial liquidity, and other important financial metrics. By understanding these correlations, firms can make more informed decisions to optimize their advertising budgets, sales strategies, and overall business operations.
+<img src="tobin.png" width="500" style="display:block; margin: 0 auto;"/>
+
+- Women’s clothing industry:
+  - The retailer in this industry has a relatively high Q ratio
+  - This implies that their stock is overvalued
+  - The data shows a downward sloping trend in the Q ratio
+- Family clothing industry:
+  - In general, the retailers in this industry show a higher Q ratio (2.14) than the retailers in the other two industries
+  - This also indicates that their stocks are overvalue
+  - The average Tobin’s Q shows a strong peak up to 2.55 in 2014
+- Shoe industry:
+  - Again, the Q ratios indicate that retailers in the shoe industry are overvalued
+  - We can observe two strong peaks in 2014 and 2018
+  - Still, after 2014, there is an overall downward sloping trend
+  - Changes in the average Tobin’s Q could be due to changing market trends and demand
+
+**Market Share**
+- Market share can be used as a measure of firm performance
+- The market shares of each industry for two years (2010 and 2019) is shown beloz
+
+<img src="marketshare.png" width="500" style="display:block; margin: 0 auto;"/>
+
+The most interesting observations are stated below:
+- Shoe industry:
+  - In 2010, the industry is dominated by the retailers Foot Locker and Collective Brands
+  - Looking at 2019, Foot Locker was able to increase its share by 20%, occupying more than half of the market alone
+- Women’s clothing industry:
+  - The market is split up between multiple retailers and not dominated by one/a few large retailers like in the shoe industry
+  - In 2019, this has changed and the market is being dominated by the Ascena Retail Group, with a share of 42%
+- Family clothing industry:
+- The market is strongly dominated by TJX Companies, followed by Gap, Nordstrom and Ross Stores
+- There are relatively many retailers with only a small market share
+- In 2019, the market is still dominated by the same retailers
+- TJX Companies’ share increased by about 10% in 2019, compared to 2010
+
+**Correlation of numerical variables**
+- Meaning of the correlation coefficients:
+  - “0” = no correlation
+  - “1” = perfect correlation
+
+<img src="cor.png" width="500" style="display:block; margin: 0 auto;"/>
+
+The variables that describe firm characteristics (variables that were initially in the dataset) show moderate/strong correlation among each other. The fact that they strongly depend upon each other also makes much sense: - The more sales a retailer makes, the more assets they have and the more they can spend on advertising 
+
+- The number of employees also correlates strongly with the assets, expenditures, sales, outstanding shares and more. A firm with many employees tends to be large; hence, they make more sales, have more shares outstanding and other
+- - The book value correlates strongly with the assets and liabilities, which also makes sense since the book value is calculated as their difference
+  - The total assets and current assets have a very strong correlation since the current assets is a part of the total assets
+  - The selling and general administrative expenses correlated strongly with the assets, liabilities and sales. The more sales a firm makes, the more they increase their assets and the more money they can spend on advertising, increasing sales again. More sales also mean higher selling expenses.
+
+- The firm size shows a moderate correlation with multiple descriptive variables of firm’ characteristics. The larger a firm, the more likely they are to have higher sales, assets, expenditures and more
+- The table shows the p-values of the correlations:
+  - The variables with a high correlation show a very low p-value
+  - If the p-value is lower than the significance level of 0.05, the correlation is statistically significant
+
 
 --- 
 
@@ -357,7 +541,5 @@ Recommendations for Companies Across All Industries:
   - Reducing investment in marketing
   - Lowering leverage ratios (i.e., the extent to which assets are financed through debt)
   - Retailers should also be aware that younger companies may have a higher Q ratio
-
-
 
 
