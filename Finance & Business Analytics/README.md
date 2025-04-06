@@ -86,14 +86,14 @@ The dataset spans from 2010 to 2020, though data for some firms is only availabl
 The dataset was cleaned by excluding unnecessary variables, handling missing values, checking for outliers, and correcting data types. All data points that were redundant or inconsistent with logical expectations were removed.
 
 The following variables were excluded:
-- "rdip" (unary variable with all zero values)
-- "bkvlps," "ni," "oibdp," "gsubind" (no descriptions available)
-- "busdec" (not required for analysis)
+- `rdip` (unary variable with all zero values)
+- `bkvlps`, `ni`, `oibdp`, `gsubind` (no descriptions available)
+- `busdec` (not required for analysis)
 
 There are 104 missing values in total, distributed across various variables. The most missing values occur in:
-- "xad" (Advertising expenditures) with 36 missing values
-  - Missing values in "xad" were replaced with 0, assuming that the firm did not allocate advertising expenditures during that period.
-- "prcc_f" (Closing share price at the end of the year) with 25 missing values
+- `xad` (Advertising expenditures) with 36 missing values
+  - Missing values in `xad` were replaced with 0, assuming that the firm did not allocate advertising expenditures during that period.
+- `prcc_f` (Closing share price at the end of the year) with 25 missing values
 - Observations with more than one missing value were removed to avoid inaccurate imputation, preserving the quality of the analysis.
 - Remaining missing values (18) were imputed using a decision tree algorithm (mice).
 
@@ -224,7 +224,7 @@ Overall:
 
 - Interpretation of the results:
   - Similar to the market share regression model, the variables are also normalised. This means we cannot precisely determine how much Tobin's Q would change due to a change in the independent variables. However, it is possible to compare the significance of the different predictors and whether these predictors are positively or negatively related to Tobin's Q. 
-  - Based on the t-score and corresponding p-values, we can conclude that only one predictor has coefficients significantly different from zero, which is advertising intensity (adv_int) .
+  - Based on the t-score and corresponding p-values, we can conclude that only one predictor has coefficients significantly different from zero, which is advertising intensity (`adv_int`) .
   - Advertising intensity: The coefficient of `adv_int` is negative. This inverse relationship implies that firms that invest more intensely in advertising are expected to have a lower Tobin's Q ratio.
 
 - Despite the other variables are not significant in predicting the market share, we may analyse them as if they were statistically significant:
@@ -246,7 +246,7 @@ Overall:
 - Since the only statistically significant firm characteristic was advertising intensity, a retailer wishing to increase their Tobin's Qshould lower their advertising intensity.
   
         
-#### Model Differences:
+#### Comparison of Models:
 
 - The key differences between the market share and Tobin's Q models were notable, with the market share regression model performing better due to a higher adjusted R-squared value. Tobin's Q, being more focused on long-term value, reflects less immediate impact from current strategies.
 - As previously discussed, both models predominantly indicate the insignificance of certain variables. However, we chose to include all variables in our analysis, as even those that are statistically insignificant can offer valuable insights.
@@ -278,18 +278,86 @@ This analysis provides insight into how various factors such as advertising inte
   - Lead variables for the market share and Tobin's Q.
   - Lag variables for the advertising intensity and marketing investments.
 
-#### Panel Data Model
-- Now that we have the disaggregated data and lead/lag variables, we can proceed with building a panel data model. Panel data allows us to control for both time-variant and time-invariant effects.
-- For this model, we will use firm-fixed effects or random effects, depending on the assumptions about the correlation between individual firm characteristics and the predictors.
-- The model will estimate the effects of various predictors (including advertising intensity, marketing investment, firm size, etc.) on market share, accounting for firm-specific factors that remain constant over time.
+#### Models with Disaggregate Data
+Using the same variables as in the previous regressions using aggregate data, 
 
-The within model accounts for the unobserved heterogeneity across firms by using firm fixed effects. This means the model will control for time-invariant factors that differ between firms but do not vary over time (like location or organizational structure).
+<p align="center">
+  $$\widehat{\text{market\_share}} = -0.03708 + 0.01573(\text{Mobile\_app}_{1}) + 0.06068(\text{women\_clothes}_{1}) + 0.10602(\text{shoes}_{1}) + \\
+  0.01611(\text{adv\_int}) - 0.03311(\text{marketing\_inv}) + 0.25848(\text{firm\_size}) - \\
+  0.05589(\text{liquidity}) - 0.01939(\text{leverage}) - 0.03436(\text{firm\_age})$$
+</p>
 
-#### Random Effects Model
-- In addition to fixed effects, we can also estimate a random effects model. The choice between fixed and random effects can be made using the Hausman test, which tests whether the firm-specific effects are correlated with the explanatory variables.
-- The random effects model assumes that the unobserved heterogeneity across firms is uncorrelated with the independent variables. This model is more efficient than the fixed effects model if the assumption holds true.
+<p align="center">
+  $$\widehat{\text{tobin\_q}} = 2.63177 - 0.10969(\text{Mobile\_app}_{1}) - 0.14522(\text{women\_clothes}_{1}) - 0.4479(\text{shoes}_{1}) - \\
+  0.9181(\text{adv\_int}) - 1.02824(\text{marketing\_inv}) + 0.8744(\text{firm\_size}) - \\
+  0.16803(\text{liquidity}) - 1.10329(\text{leverage}) - 0.62909(\text{firm\_age})$$
+</p>
 
-- 
+#### Models with Lead and Lag Variables
+
+- The lead and lag variables have multiple missing values:
+  - The companies “DSW Inc-Old” and “TJX Companies Inc (The)” both only have one observation. Therefore, the lead and lag variables cannot be computed for these observations. Hence, we omitted them.
+    - Other missing values:
+      - We computed the average increase in the lead and lag variables for each retailer.
+      - For the lead variables, we multiplied the factor we just computed with the nearest observation in that variable for the retailer.
+      - For the lag variables, we divided the factor we just computed with the nearest observation in that variable for the retailer.
+      - This method is based on the assumption that each retailer has the goal to grow. Hence, it is likely that the performance measures increase over time. Therefore, we took the average change to compute the missing values.
+    - This method did not take care of all missing values. Seventeen missing values are left, which the regression algorithm omitted.
+
+<p align="center">
+  $$\widehat{\text{lead\_market\_share}} = -0.01848 + 0.01536(\text{Mobile\_app}_{1}) + 0.06791(\text{women\_clothes}_{1}) + 0.10788(\text{shoes}_{1}) + \\
+  0.01692(\text{adv\_int}) - 0.05655(\text{marketing\_inv}) + 0.24591(\text{firm\_size}) - \\
+  0.08165(\text{liquidity}) - 0.02832(\text{leverage}) - 0.02965(\text{firm\_age}) + 0.00137(\text{lag\_adv\_int}) + \\
+  0.00927(\text{lag\_marketing\_inv})$$
+</p>
+
+<p align="center">
+  $$\widehat{\text{lead\_tobin\_q}} = 2.61415 - 0.06834(\text{Mobile\_app}_{1}) - 0.25335(\text{women\_clothes}_{1}) - 0.44089(\text{shoes}_{1}) + \\
+  0.48277(\text{adv\_int}) - 1.38049(\text{marketing\_inv}) + 1.1359(\text{firm\_size}) - \\
+  0.44458(\text{liquidity}) - 1.22359(\text{leverage}) - 0.78181(\text{firm\_age}) - 1.31545(\text{lag\_adv\_int}) + \\
+  0.37416(\text{lag\_marketing\_inv})$$
+</p>
+
+#### Comparison of Models: 
+- The adjusted R-squared of models developed using the disaggregated data is slightly higher compared to models developed with aggregate data.
+- The p-values associated with the F-statistics for both models are lower below the 5% significance level, meaning that at least one independent variable (in each model) is significantly related to the market share. The t-scores and corresponding p-values indicate that more variables are statistically significant in both models created with the disaggregated data. That is, their coefficients are significantly different from zero:
+  - Model estimating market share: 7 out of 9 when using a significance level of 5% and 9 out of 9 when using a 10% significance level.
+  - Model estimating Tobin’s q: 5 out of 9 variables are significant (dummy indicating whether the firm sells shoes, advertising intensity, marketing investments, firm size, financial leverage and firm age).
+- Overall, models developed using disaggregated data are a slightly better fit than models with aggregate data. However, neither of the models estimating Tobin’s q is a good fit they do not explain enough variance in the response variable.
+
+#### Comparison of Firms:
+
+- Market Share:
+  - The characteristics of a firm that would have a high market share are the same for all three models.
+  - The only difference between these indications is that the model including lead and lag variables indicates that:
+    - firms with high advertising intensity in the previous year are expected to have higher market shares.
+    - firms with high marketing investments in the previous year have, on average higher market shares.
+- Tobin’s q:
+  - All of the models indicate that retailers selling family clothes had higher Tobin’s q than firms in other industries when comparing otherwise identical firms.
+  - Different models indicate opposite effects of some of the predictors, depending on the dataset used to develop the model.
+  - `Mobile_app`: The model with aggregate data indicates a positive relationship between the firm having a mobile app and Tobin’s q. However, the other models suggest that having a mobile app is associated with lower Tobin’s q.
+  - `adv_int`: Model including leads and lags indicates that firms with high advertising intensity, on average, have higher Tobin’s q. The other models indicate the opposite effect of high advertising intensity on Tobin’s q.
+  - The model, including lag and lead variables, indicates that:
+    - firms with high advertising intensity in the previous year are expected to have lower Tobin’s q.
+    - firms with high marketing investments in the previous year have, on average, higher Tobin’s q.
+
+ #### Conclusion
+ After performing analysis with the regression models, it can be concluded that companies should base their interpretation on the data obtained each year rather than on average indicators. This is because more variables influence the performance of the firms from a statistical point of view.
+
+Recommendations for Companies Across All Industries:
+
+- Retailers seeking to increase their market share should consider the following actions:
+  - Increasing their firm size
+  - Launching a mobile app to sell their products
+  - Reducing investment in marketing
+  - Additionally, retailers should note that firm age is a significant predictor of market share. In general, younger companies tend to have a higher market share
+
+- For retailers aiming to increase their Tobin’s Q (the market value over the book value), they should consider:
+  - Increasing their firm size
+  - Reducing investment in marketing
+  - Lowering leverage ratios (i.e., the extent to which assets are financed through debt)
+  - Retailers should also be aware that younger companies may have a higher Q ratio
+
 
 
 
